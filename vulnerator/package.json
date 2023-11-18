@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vulnerator.helloWorld",
-        "title": "Hello World"
+        "command": "vulnerator.scanV",
+        "title": "Scan command"
       }
     ]
   },
