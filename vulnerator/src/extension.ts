@@ -9,27 +9,43 @@ import * as child_process from 'child_process';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// const npmVersion = child_process.execSync('npm -v').toString().trim();
-	// const workspaceFolder = vscode.workspace.workspaceFolders
-	// console.log(workspaceFolder?.[0].uri)
-	process.chdir("c:\\Users\\alexk\\OneDrive\\Escritorio\\demo\\calendar-mern")
-	const directory = child_process.execSync('pwd').toString().trim();
-	console.log(directory)
+	function checkDependencies() {
+		process.chdir("c:\\Users\\alexk\\OneDrive\\Escritorio\\demo\\calendar-mern")
+		const directory = child_process.exec('pwd').toString().trim();
+		console.log(directory)
 
-	child_process.exec(`npm audit`).stdout?.on('data', (data) => {
-		const ouput = data.split("\n\n")
-		let audit: { library: string, vulnerability: string }[] = [];
-		ouput.forEach((element: string, index: number) => {
+		child_process.exec(`npm audit`).stdout?.on('data', (data) => {
+			const output = data.split("\n\n")
+			let audit: { library: string, vulnerability: string }[] = [];
+			let critical = 0;
+			let high = 0;
+			let moderate = 0;
+			let low = 0;
+			for (const [element, index] of output) {
+				if (index === 0) return;
+				const lines = element.split("\n")
+				const library = lines[0];
+				const vulnerability = lines[1];
+				audit.push({
+					library: library,
+					vulnerability: vulnerability
+				})
+				if (vulnerability.includes("critical")) { critical = critical + 1; }
+				else if (vulnerability.includes("high")) { high = high + 1; }
+				else if (vulnerability.includes("moderate")) { moderate = moderate + 1 }
+				else if (vulnerability.includes("low")) { low = low++; }
+			};
 
-			if (index === 0) return;
-			const lines = element.split("\n")
-			audit.push({
-				library: lines[0],
-				vulnerability: lines[1]
-			})
+
+			console.log('critical: ' + critical);
+			console.log('high: ' + high);
+			console.log('moderate: ' + moderate);
+			console.log('low: ' + low);
+			vscode.window.showInformationMessage(`${audit.length} vulnerabilities found:`, `Critical: ${critical}`, `High: ${high}`, `Moderate: ${moderate}`, `Low: ${low}`);
 		});
-		console.log(audit)
-	});
+	}
+
+
 
 
 
@@ -49,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('vulnerator.scanV', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Vulnerator!');
+		checkDependencies();
 	});
 
 	context.subscriptions.push(disposable);
