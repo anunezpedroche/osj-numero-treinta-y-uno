@@ -10,8 +10,14 @@ import * as child_process from 'child_process';
 export function activate(context: vscode.ExtensionContext) {
 
 	function checkDependencies() {
-		process.chdir("c:\\Users\\alexk\\OneDrive\\Escritorio\\demo\\calendar-mern")
-		const directory = child_process.execSync('echo %cd%').toString().trim();
+		// get current working vscode directory
+		const current = vscode.workspace.rootPath ?? "";
+		console.log(current);
+
+		process.chdir(current)
+		const os = process.platform;
+		const command = os === "win32" ? 'echo %cd%' : 'pwd';
+		const directory = child_process.execSync(command).toString().trim();
 		console.log(JSON.stringify(directory));
 
 		child_process.exec(`npm audit`).stdout?.on('data', (data) => {
