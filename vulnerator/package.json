@@ -9,15 +9,117 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "*",
+    "onView:nodeDependencies",
+    "onView:devDependencies"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "vulnerator.helloWorld",
         "title": "Hello World"
+      }],
+      "configuration": {
+        "properties": {
+          "vulnerator.errorColor": {
+            "type": "string",
+            "default": "rgba(240,0,0,0.4)",
+            "description": "The background color used to highlight lines containing errors. (Alpha is used)"
+          },
+          "vulnerator.errorTextColor": {
+            "type": "string",
+            "default": "rgba(240,240,240,1.0)",
+            "description": "The text color used to highlight lines containing errors. (Alpha is used)"
+          },
+          "vulnerator.warningColor": {
+            "type": "string",
+            "default": "rgba(180,180,0,0.4)",
+            "description": "The background color used to highlight lines containing warnings. (Alpha is used)"
+          },
+          "vulnerator.warningTextColor": {
+            "type": "string",
+            "default": "rgba(240,240,240,1.0)",
+            "description": "The text color used to highlight lines containing warnings. (Alpha is used)"
+          },
+          "vulnerator.infoColor": {
+            "type": "string",
+            "default": "rgba(0,200,0,0.4)",
+            "description": "The background color used to highlight lines containing info. (Alpha is used)"
+          },
+          "vulnerator.infoTextColor": {
+            "type": "string",
+            "default": "rgba(240,240,240,1.0)",
+            "description": "The text color used to highlight lines containing info. (Alpha is used)"
+          },
+          "vulnerator.hintColor": {
+            "type": "string",
+            "default": "rgba(20,140,140,0.4)",
+            "description": "The background color used to highlight lines containing hints. (Alpha is used)"
+          },
+          "vulnerator.hintTextColor": {
+            "type": "string",
+            "default": "rgba(240,240,240,1.0)",
+            "description": "The text color used to highlight lines containing hints. (Alpha is used)"
+          },
+          "vulnerator.fontStyle": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "italic"
+            ],
+            "default": "italic",
+            "description": "Show ErrorLens annotations in Italics, or not?"
+          },
+          "vulnerator.fontWeight": {
+            "type": "string",
+            "enum": [
+              "100",
+              "200",
+              "300",
+              "normal",
+              "500",
+              "600",
+              "700",
+              "800",
+              "900"
+            ],
+            "default": "normal",
+            "description": "Specifies the font weight for ErrorLens annotations."
+          },
+          "vulnerator.fontMargin": {
+            "type": "string",
+            "default": "40px",
+            "description": "Distance between end of the code line, and the start of the ErrorLens annotation. (CSS units)."
+          },
+          "vulnerator.enabledDiagnosticLevels": {
+            "type": "array",
+            "description": "Specify which diagnostic levels are enhanced. e.g. [ 'error', 'warning' ]. Valid values are any or all of: 'error', 'warning', 'info' & 'hint'",
+            "default": [
+              "error",
+              "warning",
+              "info",
+              "hint"
+            ]
+          },
+          "vulnerator.statusBarControl": {
+            "type": "string",
+            "enum": [
+              "always",
+              "never",
+              "hide-when-no-issues"
+            ],
+            "description": "Specify when the ErrorLens status bar text should be shown.",
+            "default": "hide-when-no-issues"
+          },
+          "vulnerator.addAnnotationTextPrefixes": {
+            "type": "boolean",
+            "description": "If 'true', prefixes the diagnostic severity ('Error:', 'Warning:' etc) to ErrorLens annotations.",
+            "default": true
+          }
+        }
       }
-    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
