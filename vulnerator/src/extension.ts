@@ -11,8 +11,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function checkDependencies() {
 		process.chdir("c:\\Users\\alexk\\OneDrive\\Escritorio\\demo\\calendar-mern")
-		const directory = child_process.exec('pwd').toString().trim();
-		console.log(directory)
+		const directory = child_process.execSync('echo %cd%').toString().trim();
+		console.log(JSON.stringify(directory));
 
 		child_process.exec(`npm audit`).stdout?.on('data', (data) => {
 			const output = data.split("\n\n")
@@ -21,11 +21,13 @@ export function activate(context: vscode.ExtensionContext) {
 			let high = 0;
 			let moderate = 0;
 			let low = 0;
-			for (const [element, index] of output) {
-				if (index === 0) return;
-				const lines = element.split("\n")
+			for (let index = 0; index < output.length; index++) {
+				if (index === 0) continue;
+				const lines = output[index].split("\n")
 				const library = lines[0];
-				const vulnerability = lines[1];
+				if (lines.length < 2) continue;
+				const vulnerability = lines[1]
+				if (!vulnerability.includes("Severity")) continue;
 				audit.push({
 					library: library,
 					vulnerability: vulnerability
@@ -35,13 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 				else if (vulnerability.includes("moderate")) { moderate = moderate + 1 }
 				else if (vulnerability.includes("low")) { low = low++; }
 			};
-
-
-			console.log('critical: ' + critical);
-			console.log('high: ' + high);
-			console.log('moderate: ' + moderate);
-			console.log('low: ' + low);
-			vscode.window.showInformationMessage(`${audit.length} vulnerabilities found:`, `Critical: ${critical}`, `High: ${high}`, `Moderate: ${moderate}`, `Low: ${low}`);
+			vscode.window.showWarningMessage(`${audit.length} vulnerabilities found:\n${critical} critical, ${high} high, ${moderate} moderate, ${low}`);
 		});
 	}
 
