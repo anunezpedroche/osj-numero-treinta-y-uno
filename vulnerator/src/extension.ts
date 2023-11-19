@@ -198,8 +198,6 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    console.log(vulnerabilities);
-
     if (!uriToDecorate.fsPath.includes("package.json")) {
       return;
     }
@@ -252,6 +250,7 @@ export function activate(context: vscode.ExtensionContext) {
       ];
       for (const dependency of vulnerabilities) {
         const d = line.replace("\t", "").split(":")[0].split('"')[1];
+        console.log(dependency.library, d);
         if (dependency.library === d) {
           let key = `line${index}`;
           const positionStart = new vscode.Position(Number(index), 1);
@@ -261,7 +260,7 @@ export function activate(context: vscode.ExtensionContext) {
           let diag = new vscode.Diagnostic(
             rang,
             dependency.vulnerability,
-            severityLevel[dependency.vulnerability as SeverityType]
+            severityLevel[dependency.vulnerability.split(':')[1].trim() as SeverityType]
           );
           if (aggregatedDiagnostics[key]) {
             // Already added an object for this key, so augment the arrayDiagnostics[] array.
@@ -292,6 +291,8 @@ export function activate(context: vscode.ExtensionContext) {
       }
     });
 
+    console.log(aggregatedDiagnostics);
+
     for (diagnostic of vscode.languages.getDiagnostics(uriToDecorate)) {
       let key = "line" + diagnostic.range.start.line;
       if (aggregatedDiagnostics[key]) {
@@ -300,15 +301,10 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     let key: any;
-    let addMessagePrefix: boolean = AddAnnotationTextPrefixes();
     for (key in aggregatedDiagnostics) {
       // Iterate over property values (not names)
       let aggregatedDiagnostic = aggregatedDiagnostics[key];
       let messagePrefix: string = "";
-
-      if (addMessagePrefix) {
-        messagePrefix += "Severity: ";
-      }
 
       let decorationTextColor;
 
