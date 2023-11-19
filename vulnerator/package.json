@@ -16,10 +16,109 @@
   "contributes": {
     "commands": [
       {
-        "command": "vulnerator.scanV",
-        "title": "Scan command"
+        "command": "vulnerator.helloWorld",
+        "title": "Hello World"
       }
-    ]
+    ],
+    "configuration": {
+      "properties": {
+        "vulnerator.criticalColor": {
+          "type": "string",
+          "default": "rgba(186,0,255,0.4)",
+          "description": "bg-color for critical vulnerabilities"
+        },
+        "vulnerator.criticalTextColor": {
+          "type": "string",
+          "default": "rgba(240,240,240,1.0)",
+          "description": "text-color for critical vulnerabilities"
+        },
+        "vulnerator.highColor": {
+          "type": "string",
+          "default": "rgba(255,0,0,0.4)",
+          "description": "bg-color for high vulnerabilities"
+        },
+        "vulnerator.highTextColor": {
+          "type": "string",
+          "default": "rgba(240,240,240,1.0)",
+          "description": "text-color for high vulnerabilities"
+        },
+        "vulnerator.moderateColor": {
+          "type": "string",
+          "default": "rgba(255,202,0,0.4)",
+          "description": "bg-color for moderate vulnerabilities"
+        },
+        "vulnerator.moderateTextColor": {
+          "type": "string",
+          "default": "rgba(240,240,240,1.0)",
+          "description": "text-color for moderate vulnerabilities"
+        },
+        "vulnerator.lowColor": {
+          "type": "string",
+          "default": "rgba(20,140,140,0.4)",
+          "description": "bg-color for low vulnerabilities"
+        },
+        "vulnerator.lowTextColor": {
+          "type": "string",
+          "default": "rgba(240,240,240,1.0)",
+          "description": "text-color for low vulnerabilities"
+        },
+        "vulnerator.fontStyle": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "default": "italic",
+          "description": ""
+        },
+        "vulnerator.fontWeight": {
+          "type": "string",
+          "enum": [
+            "100",
+            "200",
+            "300",
+            "normal",
+            "500",
+            "600",
+            "700",
+            "800",
+            "900"
+          ],
+          "default": "normal",
+          "description": ""
+        },
+        "vulnerator.fontMargin": {
+          "type": "string",
+          "default": "25px",
+          "description": ""
+        },
+        "vulnerator.enabledDiagnosticLevels": {
+          "type": "array",
+          "description": "",
+          "default": [
+            "critical",
+            "high",
+            "moderate",
+            "low"
+          ]
+        },
+        "vulnerator.statusBarControl": {
+          "type": "string",
+          "enum": [
+            "always",
+            "never",
+            "hide-when-no-issues"
+          ],
+          "description": "",
+          "default": "hide-when-no-issues"
+        },
+        "vulnerator.addAnnotationTextPrefixes": {
+          "type": "boolean",
+          "description": "",
+          "default": true
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

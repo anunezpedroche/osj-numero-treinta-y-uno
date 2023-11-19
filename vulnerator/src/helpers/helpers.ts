@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as child_process from 'child_process';
 import fs from 'fs';
 
-interface AuditData {
+export interface AuditData {
     library: string;
     version?: string;
     vulnerability: string;
