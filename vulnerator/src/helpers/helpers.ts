@@ -28,7 +28,7 @@ export function hasLockfile(): boolean {
 export function checkLockFileExists(): boolean {
 
     const packageFile = hasLockfile();
-    console.log("packageFile", packageFile);
+
     return packageFile
 }
 
