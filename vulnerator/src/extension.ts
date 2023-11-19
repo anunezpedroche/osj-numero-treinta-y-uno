@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		child_process.exec(`npm audit`).stdout?.on('data', (data) => {
 			const output = data.split("\n\n")
-			let audit: { library: string, vulnerability: string }[] = [];
+			let audit: { library: string, version: string, vulnerability: string }[] = [];
 			let critical = 0;
 			let high = 0;
 			let moderate = 0;
@@ -30,12 +30,21 @@ export function activate(context: vscode.ExtensionContext) {
 			for (let index = 0; index < output.length; index++) {
 				if (index === 0) continue;
 				const lines = output[index].split("\n")
-				const library = lines[0];
+				const libraryData = lines[0];
+				console.log(libraryData);
+				const librarySplit = libraryData.split("  ");
+				const libraryName = librarySplit[0].trim();
+				let version;
+				if (librarySplit.length > 1) {
+					version = librarySplit[1].trim();
+				}
+
 				if (lines.length < 2) continue;
 				const vulnerability = lines[1]
 				if (!vulnerability.includes("Severity")) continue;
 				audit.push({
-					library: library,
+					library: libraryName,
+					version: version,
 					vulnerability: vulnerability
 				})
 				if (vulnerability.includes("critical")) { critical = critical + 1; }
@@ -43,7 +52,10 @@ export function activate(context: vscode.ExtensionContext) {
 				else if (vulnerability.includes("moderate")) { moderate = moderate + 1 }
 				else if (vulnerability.includes("low")) { low = low++; }
 			};
-			vscode.window.showWarningMessage(`${audit.length} vulnerabilities found:\n${critical} critical, ${high} high, ${moderate} moderate, ${low}`);
+			console.log(audit);
+			vscode.window.showWarningMessage(
+				`${audit.length} vulnerabilities found:\nCritical: ${critical}\nHigh: ${high}\nModerate: ${moderate}\nLow: ${low}`
+			);
 		});
 	}
 
@@ -69,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		checkDependencies();
 	});
-
+	checkDependencies();
 	context.subscriptions.push(disposable);
 }
 
