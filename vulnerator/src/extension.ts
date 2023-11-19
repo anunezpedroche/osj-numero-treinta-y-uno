@@ -2,12 +2,17 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as child_process from 'child_process';
+import fs from 'fs';
+import { getCurrentDirectoryCommand } from './helpers/getCurrentDirectoryCommand';
 
 
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	const command = getCurrentDirectoryCommand();
+
+
 
 	function checkDependencies() {
 		// get current working vscode directory
@@ -18,9 +23,19 @@ export function activate(context: vscode.ExtensionContext) {
 		const os = process.platform;
 		const command = os === "win32" ? 'echo %cd%' : 'pwd';
 		const directory = child_process.execSync(command).toString().trim();
+		const packageFile = fs.existsSync('package-lock.json');
+		const yarnLockFile = fs.existsSync('yarn.lock');
+		const lockFileExists = packageFile || yarnLockFile;
+		console.log(lockFileExists);
 		console.log(JSON.stringify(directory));
 
+		if (!lockFileExists) {
+			return
+		}
+
+
 		child_process.exec(`npm audit`).stdout?.on('data', (data) => {
+
 			const output = data.split("\n\n")
 			let audit: { library: string, version: string, vulnerability: string }[] = [];
 			let critical = 0;
@@ -47,12 +62,15 @@ export function activate(context: vscode.ExtensionContext) {
 					version: version,
 					vulnerability: vulnerability
 				})
+				console.log(audit);
 				if (vulnerability.includes("critical")) { critical = critical + 1; }
 				else if (vulnerability.includes("high")) { high = high + 1; }
 				else if (vulnerability.includes("moderate")) { moderate = moderate + 1 }
 				else if (vulnerability.includes("low")) { low = low++; }
 			};
-			console.log(audit);
+			if (audit.length === 0) {
+				return
+			}
 			vscode.window.showWarningMessage(
 				`${audit.length} vulnerabilities found:\nCritical: ${critical}\nHigh: ${high}\nModerate: ${moderate}\nLow: ${low}`
 			);
