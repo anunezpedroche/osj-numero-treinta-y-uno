@@ -19,10 +19,17 @@ export function getDirectoryCommand(): string {
     return os === "win32" ? 'echo %cd%' : 'pwd';
 }
 
+
+export function hasLockfile(): boolean {
+
+    return fs.existsSync('package-lock.json');
+}
+
 export function checkLockFileExists(): boolean {
-    const packageFile = fs.existsSync('package-lock.json');
-    const yarnLockFile = fs.existsSync('yarn.lock');
-    return packageFile || yarnLockFile;
+
+    const packageFile = hasLockfile();
+    console.log("packageFile", packageFile);
+    return packageFile
 }
 
 export function processAuditOutput(output: string): { audit: AuditData[]; counters: { [key: string]: number } } {
@@ -32,7 +39,7 @@ export function processAuditOutput(output: string): { audit: AuditData[]; counte
     const entries = output.split('\n\n').slice(1);
 
     for (const entry of entries) {
-        const vulnerabilityData = processVulnerability(entry);
+        const vulnerabilityData = processNpmAudit(entry);
         if (vulnerabilityData) {
             audit.push(vulnerabilityData);
             updateCounters(vulnerabilityData.vulnerability, counters);
@@ -42,7 +49,7 @@ export function processAuditOutput(output: string): { audit: AuditData[]; counte
     return { audit, counters };
 }
 
-export function processVulnerability(entry: string): AuditData | undefined {
+export function processNpmAudit(entry: string): AuditData | undefined {
     const lines = entry.split('\n');
     const libraryData = lines[0];
 
